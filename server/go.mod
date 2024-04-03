@@ -1,6 +1,6 @@
 module http3-server-poc
 
-go 1.18.1
+go 1.21.3
 
 require (
 	github.com/gin-gonic/gin v1.9.1
