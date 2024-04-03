@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"http3-server-poc/cmd/api/bootstrap"
 	"http3-server-poc/cmd/api/config"
 
@@ -15,6 +17,8 @@ func main() {
 
 	logger, _ := zap.NewProduction()
 	httpApi := bootstrap.Api(logger)
+
+	logger.Info(fmt.Sprintf("Starting HTTP3 server on %v %v", httpApi.Addr, &httpApi.Port))
 
 	err = httpApi.ListenAndServe()
 	if err != nil {
