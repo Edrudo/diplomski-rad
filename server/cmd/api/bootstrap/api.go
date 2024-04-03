@@ -38,7 +38,7 @@ func newImageProcessingEngine(
 
 func newHttp3Server(handler http.Handler) http3.Server {
 	return http3.Server{
-		Addr:      "localhost:4242",
+		Addr:      "0.0.0.0:4242",
 		Port:      4242,
 		TLSConfig: tlsconfig.GetTLSConfig(),
 		QuicConfig: &quic.Config{
