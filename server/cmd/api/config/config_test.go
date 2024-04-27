@@ -14,8 +14,8 @@ var expectedConfig = config.Config{
 		Namespace: "master-thesis",
 	},
 	ServerConfig: config.Http3ServerConfig{
-		Http3ServerUrl:  "http3-server-url",
-		Http3ServerPort: 4219,
+		Http3ServerAddress: "http3-server-url",
+		Http3ServerPort:    4219,
 	},
 	QuicConfig: config.QuicConfig{
 		HandshakeIdleTimeoutMs: 1000,

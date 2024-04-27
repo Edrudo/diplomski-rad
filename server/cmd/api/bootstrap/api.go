@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -38,8 +39,11 @@ func newImageProcessingEngine(
 
 func newHttp3Server(handler http.Handler) http3.Server {
 	return http3.Server{
-		Addr:      "0.0.0.0:4242",
-		Port:      4242,
+		Addr: fmt.Sprintf(
+			"%v:%v",
+			config.Cfg.ServerConfig.Http3ServerAddress,
+			config.Cfg.ServerConfig.Http3ServerPort,
+		),
 		TLSConfig: tlsconfig.GetTLSConfig(),
 		QuicConfig: &quic.Config{
 			HandshakeIdleTimeout: time.Millisecond * time.Duration(config.Cfg.QuicConfig.HandshakeIdleTimeoutMs),

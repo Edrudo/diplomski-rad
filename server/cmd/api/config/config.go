@@ -15,8 +15,8 @@ type AppConfig struct {
 }
 
 type Http3ServerConfig struct {
-	Http3ServerUrl  string `split_words:"true" required:"true"`
-	Http3ServerPort int    `split_words:"true" required:"true"`
+	Http3ServerAddress string `split_words:"true" required:"true"`
+	Http3ServerPort    int    `split_words:"true" required:"true"`
 }
 type QuicConfig struct {
 	HandshakeIdleTimeoutMs int `split_words:"true" required:"true"`
