@@ -3,18 +3,18 @@ package services
 import "http3-server-poc/internal/domain/models"
 
 type ImageProcessingEngine struct {
-	imageHashChan        chan string
+	imageNameChan        chan string
 	imagePartsRepository ImagePartsRepository
 	imageStore           ImageStore
 }
 
 func NewImageProcessingEngine(
-	imageHashChan chan string,
+	imageNameChan chan string,
 	imagePartsRepository ImagePartsRepository,
 	imageStore ImageStore,
 ) *ImageProcessingEngine {
 	return &ImageProcessingEngine{
-		imageHashChan:        imageHashChan,
+		imageNameChan:        imageNameChan,
 		imagePartsRepository: imagePartsRepository,
 		imageStore:           imageStore,
 	}
@@ -23,14 +23,14 @@ func NewImageProcessingEngine(
 func (e *ImageProcessingEngine) StartProcessing() {
 	for {
 		select {
-		case imageHash := <-e.imageHashChan:
-			go e.ProcessImage(imageHash)
+		case imageName := <-e.imageNameChan:
+			go e.ProcessImage(imageName)
 		}
 	}
 }
 
-func (e *ImageProcessingEngine) ProcessImage(imageHash string) {
-	imageParts, ok, err := e.imagePartsRepository.GetImagePartsList(imageHash)
+func (e *ImageProcessingEngine) ProcessImage(imageName string) {
+	imageParts, ok, err := e.imagePartsRepository.GetImagePartsList(imageName)
 	if err != nil {
 		// add logging
 		return
@@ -54,10 +54,10 @@ func (e *ImageProcessingEngine) ProcessImage(imageHash string) {
 		imageBytes = append(imageBytes, imagePart.PartData...)
 	}
 
-	err = e.imageStore.StoreImage(imageHash, imageBytes)
+	err = e.imageStore.StoreImage(imageName, imageBytes)
 
 	// delete image parts from memory
-	err = e.imagePartsRepository.DeleteImagePartList(imageHash)
+	err = e.imagePartsRepository.DeleteImagePartList(imageName)
 
 	// add logging
 

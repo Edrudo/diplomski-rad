@@ -13,7 +13,7 @@ func NewServerRequestMapper() *ServerRequestMapper {
 
 func (m *ServerRequestMapper) MapImagePartToImagePartDomainModel(imagePart controller.ImagePart) models.ImagePart {
 	return models.ImagePart{
-		ImageHash:  imagePart.ImageHash,
+		ImageName:  imagePart.ImageHash,
 		PartNumber: imagePart.PartNumber,
 		TotalParts: imagePart.TotalParts,
 		PartData:   imagePart.PartData,

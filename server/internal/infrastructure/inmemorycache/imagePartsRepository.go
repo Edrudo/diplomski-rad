@@ -35,13 +35,13 @@ func (r *ImagePartsRepository) StoreImagePart(imagePart models.ImagePart) error 
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	imageParts, ok := r.hashImagePartsMap[imagePart.ImageHash]
+	imageParts, ok := r.hashImagePartsMap[imagePart.ImageName]
 	if !ok {
 		imageParts = make([]models.ImagePart, 0)
 	}
 
 	imageParts = append(imageParts, imagePart)
-	r.hashImagePartsMap[imagePart.ImageHash] = imageParts
+	r.hashImagePartsMap[imagePart.ImageName] = imageParts
 	return nil
 }
 

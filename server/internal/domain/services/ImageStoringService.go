@@ -27,7 +27,7 @@ func (i *ImageStoringService) StoreImagePart(imagePart models.ImagePart) error {
 	}
 
 	// check if this image part already exists in stoage
-	imageParts, ok, err := i.imagePartsRepository.GetImagePartsList(imagePart.ImageHash)
+	imageParts, ok, err := i.imagePartsRepository.GetImagePartsList(imagePart.ImageName)
 	if err != nil {
 		return errctx(err)
 	}
@@ -48,7 +48,7 @@ func (i *ImageStoringService) StoreImagePart(imagePart models.ImagePart) error {
 	}
 
 	if len(imageParts)+1 == imagePart.TotalParts {
-		i.imageProcessingEngineChan <- imagePart.ImageHash
+		i.imageProcessingEngineChan <- imagePart.ImageName
 	}
 
 	return nil
