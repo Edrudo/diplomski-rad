@@ -1,6 +1,6 @@
 package controller
 
-type ImagePart struct {
+type Part struct {
 	ImageHash  string `json:"imageHash"`
 	PartNumber int    `json:"partNumber"`
 	TotalParts int    `json:"totalParts"`

@@ -15,7 +15,7 @@ func (i *ImageStore) StoreImage(imageName string, imgBytes []byte) error {
 	out, err := os.Create(
 		fmt.Sprintf(
 			// TODO change this path to be configurable
-			"./images/%s",
+			"./images/%s.jpeg",
 			imageName,
 		),
 	)

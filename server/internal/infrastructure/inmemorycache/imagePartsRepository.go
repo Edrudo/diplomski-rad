@@ -6,60 +6,60 @@ import (
 	"http3-server-poc/internal/domain/models"
 )
 
-type ImagePartsRepository struct {
-	mu                sync.Mutex
-	hashImagePartsMap map[string][]models.ImagePart
+type PartsRepository struct {
+	mu               sync.Mutex
+	dataHashPartsMap map[string][]models.Part
 }
 
-func NewImagePartsRepository() *ImagePartsRepository {
-	return &ImagePartsRepository{
-		hashImagePartsMap: map[string][]models.ImagePart{},
+func NewPartsRepository() *PartsRepository {
+	return &PartsRepository{
+		dataHashPartsMap: map[string][]models.Part{},
 	}
 }
 
-func (r *ImagePartsRepository) DoesImagePartListExist(imageHash string) (bool, error) {
+func (r *PartsRepository) DoesPartListExist(dataHash string) (bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	_, exists := r.hashImagePartsMap[imageHash]
+	_, exists := r.dataHashPartsMap[dataHash]
 	return exists, nil
 }
 
-func (r *ImagePartsRepository) DeleteImagePartList(imageHash string) error {
+func (r *PartsRepository) DeletePartList(dataHash string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	delete(r.hashImagePartsMap, imageHash)
+	delete(r.dataHashPartsMap, dataHash)
 	return nil
 }
 
-func (r *ImagePartsRepository) StoreImagePart(imagePart models.ImagePart) error {
+func (r *PartsRepository) StorePart(part models.Part) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	imageParts, ok := r.hashImagePartsMap[imagePart.ImageName]
+	parts, ok := r.dataHashPartsMap[part.DataHash]
 	if !ok {
-		imageParts = make([]models.ImagePart, 0)
+		parts = make([]models.Part, 0)
 	}
 
-	imageParts = append(imageParts, imagePart)
-	r.hashImagePartsMap[imagePart.ImageName] = imageParts
+	parts = append(parts, part)
+	r.dataHashPartsMap[part.DataHash] = parts
 	return nil
 }
 
-func (r *ImagePartsRepository) GetNumberOfPartsInStorage(imageHash string) (int, error) {
+func (r *PartsRepository) GetNumberOfPartsInStorage(dataHash string) (int, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	imageParts, ok := r.hashImagePartsMap[imageHash]
+	parts, ok := r.dataHashPartsMap[dataHash]
 	if !ok {
 		return 0, nil
 	}
 
-	return len(imageParts), nil
+	return len(parts), nil
 }
 
-func (r *ImagePartsRepository) GetImagePartsList(imageHash string) ([]models.ImagePart, bool, error) {
+func (r *PartsRepository) GetPartsList(dataHash string) ([]models.Part, bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	imageParts, ok := r.hashImagePartsMap[imageHash]
+	parts, ok := r.dataHashPartsMap[dataHash]
 
-	return imageParts, ok, nil
+	return parts, ok, nil
 }

@@ -22,19 +22,19 @@ import (
 )
 
 func newController(
-	imageStoringService controller.ImageStoringService,
+	partsStoringService controller.PartsStoringService,
 	logger *zap.Logger,
 ) *controller.Controller {
 	serverRequestMapper := controllermappers.NewServerRequestMapper()
-	return controller.NewController(imageStoringService, logger, serverRequestMapper)
+	return controller.NewController(partsStoringService, logger, serverRequestMapper)
 }
 
-func newImageProcessingEngine(
-	imageHashChan chan string,
-	imagePartsRepository services.ImagePartsRepository,
+func newPartsProcessingEngine(
+	dataHashChan chan string,
+	partsRepository services.PartsRepository,
 	imageStore services.ImageStore,
-) *services.ImageProcessingEngine {
-	return services.NewImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
+) *services.PartsProcessingEngine {
+	return services.NewPartsProcessingEngine(dataHashChan, partsRepository, imageStore)
 }
 
 func newHttp3Server(handler http.Handler) http3.Server {
@@ -65,15 +65,15 @@ func newHttp3Server(handler http.Handler) http3.Server {
 func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
-	imagePartsRepository := inmemorycache.NewImagePartsRepository()
+	partsRepository := inmemorycache.NewPartsRepository()
 	imageStore := filesystem.NewImageStore()
-	imageHashChan := make(chan string)
-	imageProcessingEngine := newImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
-	go imageProcessingEngine.StartProcessing()
+	dataHashChan := make(chan string)
+	partsProcessingEngine := newPartsProcessingEngine(dataHashChan, partsRepository, imageStore)
+	go partsProcessingEngine.StartProcessing()
 
-	imageStoringService := services.NewImageStoringService(imagePartsRepository, imageHashChan)
+	partsStoringService := services.NewPartsStoringService(partsRepository, dataHashChan)
 
-	controller := newController(imageStoringService, logger)
+	controller := newController(partsStoringService, logger)
 
 	handler, err := router.GenerateRoutingHandler(controller)
 	if err != nil {
