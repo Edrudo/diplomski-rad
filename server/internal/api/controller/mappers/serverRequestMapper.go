@@ -11,11 +11,11 @@ func NewServerRequestMapper() *ServerRequestMapper {
 	return &ServerRequestMapper{}
 }
 
-func (m *ServerRequestMapper) MapPartDtoToPartDomainModel(imagePart controller.Part) models.Part {
+func (m *ServerRequestMapper) MapPartDtoToPartDomainModel(part controller.Part) models.Part {
 	return models.Part{
-		DataHash:   imagePart.ImageHash,
-		PartNumber: imagePart.PartNumber,
-		TotalParts: imagePart.TotalParts,
-		PartData:   imagePart.PartData,
+		DataHash:   part.ImageHash,
+		PartNumber: part.PartNumber,
+		TotalParts: part.TotalParts,
+		PartData:   part.PartData,
 	}
 }

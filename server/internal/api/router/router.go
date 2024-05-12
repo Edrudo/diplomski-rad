@@ -27,7 +27,7 @@ func GenerateRoutingHandler(
 	// Add middleware
 	router.Use(gin.Logger())
 
-	// IMAGE PROCESSING ENDPOINT
+	// PART PROCESSING ENDPOINT
 	{
 		router.POST(PartRoute, controller.ProcessPart)
 	}

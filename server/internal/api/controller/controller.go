@@ -61,7 +61,7 @@ func (c *Controller) ProcessPart(requestContext *gin.Context) {
 	// Map the DTO struct into a domain model
 	part := c.serverRequestMapper.MapPartDtoToPartDomainModel(partDto)
 
-	// store the image part
+	// store the part
 	err = c.partsStoringService.StorePart(part)
 	if err != nil {
 		c.logger.Warn(

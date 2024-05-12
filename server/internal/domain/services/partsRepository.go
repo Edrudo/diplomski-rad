@@ -3,9 +3,9 @@ package services
 import "http3-server-poc/internal/domain/models"
 
 type PartsRepository interface {
-	DoesPartListExist(imageHash string) (bool, error)
-	DeletePartList(imageHash string) error
-	StorePart(imagePart models.Part) error
-	GetNumberOfPartsInStorage(imageHash string) (int, error)
-	GetPartsList(imageHash string) ([]models.Part, bool, error)
+	DoesPartListExist(string) (bool, error)
+	DeletePartList(string) error
+	StorePart(models.Part) error
+	GetNumberOfPartsInStorage(string) (int, error)
+	GetPartsList(string) ([]models.Part, bool, error)
 }

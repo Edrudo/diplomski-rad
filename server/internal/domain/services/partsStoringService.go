@@ -13,11 +13,11 @@ type PartsStoringService struct {
 
 func NewPartsStoringService(
 	partsRepository PartsRepository,
-	imageProcessingEngineChan chan string,
+	partsProcessingEngineChan chan string,
 ) *PartsStoringService {
 	return &PartsStoringService{
 		partsRepository:           partsRepository,
-		partsProcessingEngineChan: imageProcessingEngineChan,
+		partsProcessingEngineChan: partsProcessingEngineChan,
 	}
 }
 
@@ -27,15 +27,15 @@ func (i *PartsStoringService) StorePart(part models.Part) error {
 	}
 
 	// check if this part already exists in stoage
-	imageParts, ok, err := i.partsRepository.GetPartsList(part.DataHash)
+	parts, ok, err := i.partsRepository.GetPartsList(part.DataHash)
 	if err != nil {
 		return errctx(err)
 	}
 
 	// if it exists then do a noop
 	if ok {
-		for _, part := range imageParts {
-			if part.PartNumber == part.PartNumber {
+		for _, p := range parts {
+			if p.PartNumber == part.PartNumber {
 				return nil
 			}
 		}
@@ -47,7 +47,7 @@ func (i *PartsStoringService) StorePart(part models.Part) error {
 		return errctx(err)
 	}
 
-	if len(imageParts)+1 == part.TotalParts {
+	if len(parts)+1 == part.TotalParts {
 		i.partsProcessingEngineChan <- part.DataHash
 	}
 

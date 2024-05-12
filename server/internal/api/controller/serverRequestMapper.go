@@ -5,5 +5,5 @@ import (
 )
 
 type ServerRequestMapper interface {
-	MapPartDtoToPartDomainModel(imagePart Part) models.Part
+	MapPartDtoToPartDomainModel(part Part) models.Part
 }
