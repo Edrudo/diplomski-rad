@@ -22,19 +22,19 @@ import (
 )
 
 func newController(
-	imageStoringService controller.ImageStoringService,
+	partsStoringService controller.PartsStoringService,
 	logger *zap.Logger,
 ) *controller.Controller {
 	serverRequestMapper := controllermappers.NewServerRequestMapper()
-	return controller.NewController(imageStoringService, logger, serverRequestMapper)
+	return controller.NewController(partsStoringService, logger, serverRequestMapper)
 }
 
-func newImageProcessingEngine(
-	imageHashChan chan string,
-	imagePartsRepository services.ImagePartsRepository,
-	imageStore services.ImageStore,
-) *services.ImageProcessingEngine {
-	return services.NewImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
+func newPartProcessingEngine(
+	partsHashChan chan string,
+	partsRepository services.PartsRepository,
+	dataStore services.DataStore,
+) *services.PartProcessingEngine {
+	return services.NewPartProcessingEngine(partsHashChan, partsRepository, dataStore)
 }
 
 func newHttp3Server(handler http.Handler) http3.Server {
@@ -65,15 +65,15 @@ func newHttp3Server(handler http.Handler) http3.Server {
 func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
-	imagePartsRepository := inmemorycache.NewImagePartsRepository()
-	imageStore := filesystem.NewImageStore()
-	imageHashChan := make(chan string)
-	imageProcessingEngine := newImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
-	go imageProcessingEngine.StartProcessing()
+	partsRepository := inmemorycache.NewPartsRepository()
+	dataStore := filesystem.NewDataStore()
+	hashChan := make(chan string)
+	partProcessingEngine := newPartProcessingEngine(hashChan, partsRepository, dataStore)
+	go partProcessingEngine.StartProcessing()
 
-	imageStoringService := services.NewImageStoringService(imagePartsRepository, imageHashChan)
+	partStoringService := services.NewPartStoringService(partsRepository, hashChan)
 
-	controller := newController(imageStoringService, logger)
+	controller := newController(partStoringService, logger)
 
 	handler, err := router.GenerateRoutingHandler(controller)
 	if err != nil {

@@ -5,18 +5,18 @@ import (
 	"os"
 )
 
-type ImageStore struct{}
+type DataStore struct{}
 
-func NewImageStore() *ImageStore {
-	return &ImageStore{}
+func NewDataStore() *DataStore {
+	return &DataStore{}
 }
 
-func (i *ImageStore) StoreImage(imageName string, imgBytes []byte) error {
+func (i *DataStore) StorePart(dataHash string, data []byte) error {
 	out, err := os.Create(
 		fmt.Sprintf(
 			// TODO change this path to be configurable
 			"./images/%s",
-			imageName,
+			dataHash,
 		),
 	)
 	defer out.Close()
@@ -25,7 +25,7 @@ func (i *ImageStore) StoreImage(imageName string, imgBytes []byte) error {
 	}
 
 	// write into a file
-	if _, err := out.Write(imgBytes); err != nil {
+	if _, err := out.Write(data); err != nil {
 		// TODO add logging
 		panic(err)
 	}

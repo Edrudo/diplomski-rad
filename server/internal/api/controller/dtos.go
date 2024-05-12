@@ -1,7 +1,7 @@
 package controller
 
-type ImagePart struct {
-	ImageHash  string `json:"imageHash"`
+type Part struct {
+	DataHash   string `json:"dataHash"`
 	PartNumber int    `json:"partNumber"`
 	TotalParts int    `json:"totalParts"`
 	PartData   []byte `json:"partData"`
