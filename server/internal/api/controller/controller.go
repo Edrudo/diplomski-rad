@@ -12,31 +12,31 @@ import (
 
 type Controller struct {
 	logger              *zap.Logger
-	partsStoringService PartsStoringService
+	imageStoringService ImageStoringService
 	serverRequestMapper ServerRequestMapper
 }
 
 func NewController(
-	partsStoringService PartsStoringService,
+	imageStoringService ImageStoringService,
 	logger *zap.Logger,
 	mapper ServerRequestMapper,
 ) *Controller {
 	return &Controller{
 		logger:              logger,
-		partsStoringService: partsStoringService,
+		imageStoringService: imageStoringService,
 		serverRequestMapper: mapper,
 	}
 }
 
-// ProcessPart processes the received part
-func (c *Controller) ProcessPart(requestContext *gin.Context) {
+// ProcessImagePart processes the received image part
+func (c *Controller) ProcessImagePart(requestContext *gin.Context) {
 	var httpStatusCode int
 
 	// Read the whole body of the request
 	body, err := io.ReadAll(requestContext.Request.Body)
 	if err != nil {
 		c.logger.Error(
-			"processing part, error while reading request body",
+			"processing image part, error while reading request body",
 		)
 		httpStatusCode = http.StatusInternalServerError
 		requestContext.Writer.WriteHeader(httpStatusCode)
@@ -45,12 +45,12 @@ func (c *Controller) ProcessPart(requestContext *gin.Context) {
 	}
 
 	// Unmarshal the received body into a DTO struct
-	var partDto Part
+	var imagePartDto ImagePart
 
-	err = json.Unmarshal(body, &partDto)
+	err = json.Unmarshal(body, &imagePartDto)
 	if err != nil {
 		c.logger.Warn(
-			"processing part, error while unmarshalling",
+			"processing image part, error while unmarshalling",
 		)
 		httpStatusCode = http.StatusBadRequest
 		requestContext.Writer.WriteHeader(httpStatusCode)
@@ -59,13 +59,13 @@ func (c *Controller) ProcessPart(requestContext *gin.Context) {
 	}
 
 	// Map the DTO struct into a domain model
-	part := c.serverRequestMapper.MapPartToPartDomainModel(partDto)
+	imagePart := c.serverRequestMapper.MapImagePartToImagePartDomainModel(imagePartDto)
 
-	// store the part
-	err = c.partsStoringService.StorePart(part)
+	// store the image part
+	err = c.imageStoringService.StoreImagePart(imagePart)
 	if err != nil {
 		c.logger.Warn(
-			fmt.Sprintf("processing part, failed to store part: %s", err.Error()),
+			fmt.Sprintf("processing image part, failed to store image part: %s", err.Error()),
 		)
 		httpStatusCode = http.StatusInternalServerError
 		requestContext.Writer.WriteHeader(httpStatusCode)

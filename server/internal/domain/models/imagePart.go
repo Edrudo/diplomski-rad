@@ -1,7 +1,7 @@
 package models
 
-type Part struct {
-	DataHash   string
+type ImagePart struct {
+	ImageName  string
 	PartNumber int
 	TotalParts int
 	PartData   []byte

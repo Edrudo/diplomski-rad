@@ -22,19 +22,19 @@ import (
 )
 
 func newController(
-	partsStoringService controller.PartsStoringService,
+	imageStoringService controller.ImageStoringService,
 	logger *zap.Logger,
 ) *controller.Controller {
 	serverRequestMapper := controllermappers.NewServerRequestMapper()
-	return controller.NewController(partsStoringService, logger, serverRequestMapper)
+	return controller.NewController(imageStoringService, logger, serverRequestMapper)
 }
 
-func newPartProcessingEngine(
-	partsHashChan chan string,
-	partsRepository services.PartsRepository,
-	dataStore services.DataStore,
-) *services.PartProcessingEngine {
-	return services.NewPartProcessingEngine(partsHashChan, partsRepository, dataStore)
+func newImageProcessingEngine(
+	imageHashChan chan string,
+	imagePartsRepository services.ImagePartsRepository,
+	imageStore services.ImageStore,
+) *services.ImageProcessingEngine {
+	return services.NewImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
 }
 
 func newHttp3Server(handler http.Handler) http3.Server {
@@ -65,15 +65,15 @@ func newHttp3Server(handler http.Handler) http3.Server {
 func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
-	partsRepository := inmemorycache.NewPartsRepository()
-	dataStore := filesystem.NewDataStore()
-	hashChan := make(chan string)
-	partProcessingEngine := newPartProcessingEngine(hashChan, partsRepository, dataStore)
-	go partProcessingEngine.StartProcessing()
+	imagePartsRepository := inmemorycache.NewImagePartsRepository()
+	imageStore := filesystem.NewImageStore()
+	imageHashChan := make(chan string)
+	imageProcessingEngine := newImageProcessingEngine(imageHashChan, imagePartsRepository, imageStore)
+	go imageProcessingEngine.StartProcessing()
 
-	partStoringService := services.NewPartStoringService(partsRepository, hashChan)
+	imageStoringService := services.NewImageStoringService(imagePartsRepository, imageHashChan)
 
-	controller := newController(partStoringService, logger)
+	controller := newController(imageStoringService, logger)
 
 	handler, err := router.GenerateRoutingHandler(controller)
 	if err != nil {

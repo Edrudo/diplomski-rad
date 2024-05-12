@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	PartRoute = "/part"
+	ImagePartRoute = "/imagePart"
 )
 
 type Controller interface {
-	ProcessPart(requestContext *gin.Context)
+	ProcessImagePart(requestContext *gin.Context)
 }
 
 // GenerateRoutingHandler creates a new routing handler which routes the requests accordingly
@@ -27,9 +27,9 @@ func GenerateRoutingHandler(
 	// Add middleware
 	router.Use(gin.Logger())
 
-	// PART PROCESSING ENDPOINT
+	// IMAGE PROCESSING ENDPOINT
 	{
-		router.POST(PartRoute, controller.ProcessPart)
+		router.POST(ImagePartRoute, controller.ProcessImagePart)
 	}
 
 	return router, nil
