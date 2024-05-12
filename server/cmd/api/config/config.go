@@ -3,9 +3,10 @@ package config
 var Cfg Config
 
 type Config struct {
-	App          AppConfig         `split_words:"true" required:"true"`
+	App          AppConfig         `split_words:"true"` // if deployed to k8s
 	ServerConfig Http3ServerConfig `split_words:"true" required:"true"`
 	QuicConfig   QuicConfig        `split_words:"true" required:"true"`
+	ImageConfig  ImageConfig       `split_words:"true" required:"true"`
 }
 
 // AppConfig is a struct that contains application's full name and namespace.
@@ -22,4 +23,8 @@ type QuicConfig struct {
 	HandshakeIdleTimeoutMs int `split_words:"true" required:"true"`
 	MaxIdleTimeoutMs       int `split_words:"true" required:"true"`
 	KeepAlivePeriod        int `split_words:"true" required:"true"`
+}
+
+type ImageConfig struct {
+	ImageExtension string `split_words:"true" required:"true"`
 }

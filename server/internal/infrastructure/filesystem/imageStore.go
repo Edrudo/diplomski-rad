@@ -3,6 +3,8 @@ package filesystem
 import (
 	"fmt"
 	"os"
+
+	"http3-server-poc/cmd/api/config"
 )
 
 type ImageStore struct{}
@@ -15,8 +17,9 @@ func (i *ImageStore) StoreImage(imageName string, imgBytes []byte) error {
 	out, err := os.Create(
 		fmt.Sprintf(
 			// TODO change this path to be configurable
-			"./images/%s.jpeg",
+			"./images/%s.%s",
 			imageName,
+			config.Cfg.ImageConfig.ImageExtension,
 		),
 	)
 	defer out.Close()
