@@ -1,0 +1,10 @@
+output   = "models"
+
+[mysql]
+  dbname = "diplomski"
+  host   = "localhost"
+  port   = 33061
+  user   = "edrudo"
+  pass   = ""
+  sslmode = "false"
+  shema = "geoshots"
