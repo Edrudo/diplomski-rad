@@ -1,5 +1,5 @@
 package services
 
 type ImageStore interface {
-	StoreImage(imageName string, image []byte) error
+	StoreImage(imageName string, image []byte) (string, error)
 }

@@ -18,6 +18,7 @@ import (
 	"http3-server-poc/internal/domain/services"
 	"http3-server-poc/internal/infrastructure/filesystem"
 	"http3-server-poc/internal/infrastructure/inmemorycache"
+	"http3-server-poc/internal/infrastructure/mysql"
 	"http3-server-poc/internal/tlsconfig"
 )
 
@@ -32,9 +33,17 @@ func newController(
 func newPartsProcessingEngine(
 	dataHashChan chan string,
 	partsRepository services.PartsRepository,
+	getdataRepository services.GeodataRepository,
 	imageStore services.ImageStore,
+	jsonStore services.JsonStore,
 ) *services.PartsProcessingEngine {
-	return services.NewPartsProcessingEngine(dataHashChan, partsRepository, imageStore)
+	return services.NewPartsProcessingEngine(
+		dataHashChan,
+		partsRepository,
+		getdataRepository,
+		imageStore,
+		jsonStore,
+	)
 }
 
 func newHttp3Server(handler http.Handler) http3.Server {
@@ -65,10 +74,19 @@ func newHttp3Server(handler http.Handler) http3.Server {
 func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
+	mysqlConnection := newMysqlConnection(logger)
+	gedataRepository := mysql.NewGeodataRepository(mysqlConnection)
 	partsRepository := inmemorycache.NewPartsRepository()
 	imageStore := filesystem.NewImageStore()
+	jsonStore := filesystem.NewJsonStore()
 	dataHashChan := make(chan string)
-	partsProcessingEngine := newPartsProcessingEngine(dataHashChan, partsRepository, imageStore)
+	partsProcessingEngine := newPartsProcessingEngine(
+		dataHashChan,
+		partsRepository,
+		gedataRepository,
+		imageStore,
+		jsonStore,
+	)
 	go partsProcessingEngine.StartProcessing()
 
 	partsStoringService := services.NewPartsStoringService(partsRepository, dataHashChan)

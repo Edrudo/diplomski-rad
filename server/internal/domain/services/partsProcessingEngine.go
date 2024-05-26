@@ -1,22 +1,32 @@
 package services
 
-import "http3-server-poc/internal/domain/models"
+import (
+	"encoding/json"
+
+	"http3-server-poc/internal/domain/models"
+)
 
 type PartsProcessingEngine struct {
-	dataHashChan    chan string
-	partsRepository PartsRepository
-	imageStore      ImageStore
+	dataHashChan      chan string
+	partsRepository   PartsRepository
+	geoDataRepository GeodataRepository
+	imageStore        ImageStore
+	jsonStore         JsonStore
 }
 
 func NewPartsProcessingEngine(
 	dataHashChan chan string,
 	partsRepository PartsRepository,
+	geoDataRepository GeodataRepository,
 	imageStore ImageStore,
+	jsonStore JsonStore,
 ) *PartsProcessingEngine {
 	return &PartsProcessingEngine{
-		dataHashChan:    dataHashChan,
-		partsRepository: partsRepository,
-		imageStore:      imageStore,
+		dataHashChan:      dataHashChan,
+		partsRepository:   partsRepository,
+		geoDataRepository: geoDataRepository,
+		imageStore:        imageStore,
+		jsonStore:         jsonStore,
 	}
 }
 
@@ -54,7 +64,26 @@ func (e *PartsProcessingEngine) ProcessParts(dataHash string) {
 		dataBytes = append(dataBytes, part.PartData...)
 	}
 
-	err = e.imageStore.StoreImage(dataHash, dataBytes)
+	// unmarshall data to json
+	var geoshot models.Geoshot
+	err = json.Unmarshal(dataBytes, &geoshot)
+	if err != nil {
+		// add logging
+		return
+	}
+
+	// store image to filesystem
+	imagePath, err := e.imageStore.StoreImage(dataHash, geoshot.Image)
+
+	// store json to filesystem
+	jsonBytes, err := json.Marshal(geoshot)
+	if err != nil {
+		// add logging
+	}
+	jsonPath, err := e.jsonStore.StoreJson(dataHash, jsonBytes)
+
+	// save geo metadata
+	err = e.geoDataRepository.SaveGeoshot(geoshot, imagePath, jsonPath)
 
 	// delete parts from memory
 	err = e.partsRepository.DeletePartList(dataHash)
