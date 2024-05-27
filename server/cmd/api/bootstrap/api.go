@@ -75,7 +75,7 @@ func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
 	mysqlConnection := newMysqlConnection(logger)
-	gedataRepository := mysql.NewGeodataRepository(mysqlConnection)
+	gedataRepository := mysql.NewGeodataRepository(mysqlConnection, logger)
 	partsRepository := inmemorycache.NewPartsRepository()
 	imageStore := filesystem.NewImageStore()
 	jsonStore := filesystem.NewJsonStore()

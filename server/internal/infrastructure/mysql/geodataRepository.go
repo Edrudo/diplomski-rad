@@ -6,6 +6,7 @@ import (
 
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"go.uber.org/zap"
 
 	"http3-server-poc/cmd/api/config"
 	"http3-server-poc/internal/domain/models"
@@ -14,11 +15,16 @@ import (
 
 type GeodataRepository struct {
 	database Database
+	logger   *zap.Logger
 }
 
-func NewGeodataRepository(database Database) *GeodataRepository {
+func NewGeodataRepository(
+	database Database,
+	logger *zap.Logger,
+) *GeodataRepository {
 	return &GeodataRepository{
 		database: database,
+		logger:   logger,
 	}
 }
 
@@ -27,8 +33,9 @@ func (r *GeodataRepository) SaveGeoshot(
 	imagePath string,
 	jsonPath string,
 ) error {
-	timestamp, err := time.Parse("'2024-05-14 18:00:00'", geoshot.Timestamp)
+	timestamp, err := time.Parse("20060102150405", geoshot.Timestamp)
 	if err != nil {
+		r.logger.Warn("GeodataRepository, failed to parse timestamp", zap.Error(err))
 		return err
 	}
 
@@ -69,6 +76,7 @@ func (r *GeodataRepository) SaveGeoshot(
 		),
 	)
 	if err != nil {
+		r.logger.Warn("GeodataRepository, failed to insert into db", zap.Error(err))
 		return err
 	}
 

@@ -16,7 +16,7 @@ func NewJsonStore() *JsonStore {
 func (i *JsonStore) StoreJson(jsonName string, json []byte) (string, error) {
 	filePath := fmt.Sprintf(
 		"%s/%s.json",
-		config.Cfg.JsonConfig,
+		config.Cfg.JsonConfig.Directory,
 		jsonName,
 	)
 	out, err := os.Create(filePath)
