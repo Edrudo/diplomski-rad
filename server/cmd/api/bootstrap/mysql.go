@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	mysqlConnectionFormat = "%s:%s@tcp(localhost:%s)/%s"
+	mysqlConnectionFormat = "%s:%s@tcp(%s)/%s"
 )
 
 func newMysqlConnection(logger *zap.Logger) *sql.DB {

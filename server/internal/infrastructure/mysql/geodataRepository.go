@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"go.uber.org/zap"
@@ -39,6 +40,8 @@ func (r *GeodataRepository) SaveGeoshot(
 		return err
 	}
 
+	boil.DebugMode = true
+
 	boilerGeoshot := boilermodels.Geoshot{
 		EventID:      null.NewInt(config.Cfg.EventId, true),
 		DeviceID:     null.NewInt(geoshot.DeviceId, true),
@@ -47,9 +50,9 @@ func (r *GeodataRepository) SaveGeoshot(
 		Lon:          null.NewFloat64(geoshot.Coordinates[0][1], true),
 		Timestamp:    null.NewTime(timestamp, true),
 		Age:          null.NewInt(geoshot.Age, true),
-		Buffered:     null.NewInt(0, true),
-		Onstage:      null.NewInt(-1, true),
-		Eventhos:     null.NewInt(-1, true),
+		Buffered:     null.NewInt(1, true),
+		Onstage:      null.NewInt(1, true),
+		Eventhos:     null.NewInt(1, true),
 		EventhosStat: null.Int{},
 		Jsonpath:     null.NewString(jsonPath, false),
 		Synced:       null.Int{},
@@ -58,22 +61,7 @@ func (r *GeodataRepository) SaveGeoshot(
 	err = boilerGeoshot.Insert(
 		context.Background(),
 		r.database,
-		boil.Whitelist(
-			boilermodels.GeoshotColumns.ID,
-			boilermodels.GeoshotColumns.EventID,
-			boilermodels.GeoshotColumns.DeviceID,
-			boilermodels.GeoshotColumns.Imgpath,
-			boilermodels.GeoshotColumns.Lat,
-			boilermodels.GeoshotColumns.Lon,
-			boilermodels.GeoshotColumns.Timestamp,
-			boilermodels.GeoshotColumns.Age,
-			boilermodels.GeoshotColumns.Buffered,
-			boilermodels.GeoshotColumns.Onstage,
-			boilermodels.GeoshotColumns.Eventhos,
-			boilermodels.GeoshotColumns.EventhosStat,
-			boilermodels.GeoshotColumns.Jsonpath,
-			boilermodels.GeoshotColumns.Synced,
-		),
+		boil.Infer(),
 	)
 	if err != nil {
 		r.logger.Warn("GeodataRepository, failed to insert into db", zap.Error(err))
