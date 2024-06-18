@@ -37,6 +37,7 @@ func newPartsProcessingEngine(
 	getdataRepository services.GeodataRepository,
 	imageStore services.ImageStore,
 	jsonStore services.JsonStore,
+	logger *zap.Logger,
 ) *services.PartsProcessingEngine {
 	return services.NewPartsProcessingEngine(
 		dataHashChan,
@@ -44,6 +45,7 @@ func newPartsProcessingEngine(
 		getdataRepository,
 		imageStore,
 		jsonStore,
+		logger,
 	)
 }
 
@@ -93,6 +95,7 @@ func Api(logger *zap.Logger) http3.Server {
 		gedataRepository,
 		imageStore,
 		jsonStore,
+		logger,
 	)
 	go partsProcessingEngine.StartProcessing()
 

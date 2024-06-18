@@ -3,6 +3,8 @@ package services
 import (
 	"encoding/json"
 
+	"go.uber.org/zap"
+
 	"http3-server-poc/cmd/api/config"
 	"http3-server-poc/internal/domain/models"
 )
@@ -13,6 +15,7 @@ type PartsProcessingEngine struct {
 	geoDataRepository GeodataRepository
 	imageStore        ImageStore
 	jsonStore         JsonStore
+	logger            *zap.Logger
 }
 
 func NewPartsProcessingEngine(
@@ -21,6 +24,7 @@ func NewPartsProcessingEngine(
 	geoDataRepository GeodataRepository,
 	imageStore ImageStore,
 	jsonStore JsonStore,
+	logger *zap.Logger,
 ) *PartsProcessingEngine {
 	return &PartsProcessingEngine{
 		dataHashChan:      dataHashChan,
@@ -28,6 +32,7 @@ func NewPartsProcessingEngine(
 		geoDataRepository: geoDataRepository,
 		imageStore:        imageStore,
 		jsonStore:         jsonStore,
+		logger:            logger,
 	}
 }
 
@@ -72,6 +77,13 @@ func (e *PartsProcessingEngine) ProcessParts(dataHash string) {
 		// add logging
 		return
 	}
+
+	e.logger.Info(
+		"Processing geoshot",
+		zap.Any("geoshot", geoshot.DeviceId),
+		zap.Any("dataHash", dataHash),
+		zap.Any("timestamp", geoshot.Timestamp),
+	)
 
 	// store image to filesystem
 	imagePath, err := e.imageStore.StoreImage(dataHash, geoshot.Image)
