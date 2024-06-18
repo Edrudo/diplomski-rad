@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -74,7 +75,13 @@ func newHttp3Server(handler http.Handler) http3.Server {
 func Api(logger *zap.Logger) http3.Server {
 	defer logger.Sync() // flushes buffer, if any
 
-	mysqlConnection := newMysqlConnection(logger)
+	var mysqlConnection *sql.DB
+
+	if config.Cfg.DatabaseEnabled {
+		mysqlConnection = newMysqlConnection(logger)
+	} else {
+		mysqlConnection = nil
+	}
 	gedataRepository := mysql.NewGeodataRepository(mysqlConnection, logger)
 	partsRepository := inmemorycache.NewPartsRepository()
 	imageStore := filesystem.NewImageStore()

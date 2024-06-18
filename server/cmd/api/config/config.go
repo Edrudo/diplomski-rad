@@ -3,13 +3,14 @@ package config
 var Cfg Config
 
 type Config struct {
-	App          AppConfig         `split_words:"true"` // if deployed to k8s
-	ServerConfig Http3ServerConfig `split_words:"true" required:"true"`
-	QuicConfig   QuicConfig        `split_words:"true" required:"true"`
-	ImageConfig  ImageConfig       `split_words:"true" required:"true"`
-	JsonConfig   JsonConfig        `split_words:"true" required:"true"`
-	MysqlConfig  MySqlConfig       `split_words:"true" required:"true"`
-	EventId      int               `split_words:"true" required:"true"`
+	App             AppConfig         `split_words:"true"` // if deployed to k8s
+	ServerConfig    Http3ServerConfig `split_words:"true" required:"true"`
+	QuicConfig      QuicConfig        `split_words:"true" required:"true"`
+	ImageConfig     ImageConfig       `split_words:"true" required:"true"`
+	JsonConfig      JsonConfig        `split_words:"true" required:"true"`
+	MysqlConfig     MySqlConfig       `split_words:"true" required:"true"`
+	EventId         int               `split_words:"true" required:"true"`
+	DatabaseEnabled bool              `split_words:"true" required:"true"`
 }
 
 // AppConfig is a struct that contains application's full name and namespace.

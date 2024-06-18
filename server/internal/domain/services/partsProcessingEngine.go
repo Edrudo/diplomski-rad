@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 
+	"http3-server-poc/cmd/api/config"
 	"http3-server-poc/internal/domain/models"
 )
 
@@ -82,8 +83,10 @@ func (e *PartsProcessingEngine) ProcessParts(dataHash string) {
 	}
 	jsonPath, err := e.jsonStore.StoreJson(dataHash, jsonBytes)
 
-	// save geo metadata
-	err = e.geoDataRepository.SaveGeoshot(geoshot, imagePath, jsonPath)
+	if config.Cfg.DatabaseEnabled {
+		// save geo metadata
+		err = e.geoDataRepository.SaveGeoshot(geoshot, imagePath, jsonPath)
+	}
 
 	// delete parts from memory
 	err = e.partsRepository.DeletePartList(dataHash)
