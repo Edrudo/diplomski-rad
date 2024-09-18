@@ -1,3 +1,5 @@
+# HTTP3 server
+
 Server that knows how to communicate with master thesis HTTP3 client.
 Before starting the server you need to set enviroment variables and 
 create two directories `./images` and `./json`. This can be done using the `env.sh` script.  
